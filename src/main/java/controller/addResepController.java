@@ -66,7 +66,10 @@ public class addResepController {
         if (selectedFile != null) {
             fotoTerpilih = selectedFile;
             // Tampilkan ke layar
-            Image image = new Image(selectedFile.toURI().toString());
+//            Image image = new Image(selectedFile.toURI().toString());
+            // Tampilkan ke layar dengan membatasi resolusi maksimum (misal 500x500 pixel)
+// Parameter: (url, requestedWidth, requestedHeight, preserveRatio, smooth)
+            Image image = new Image(selectedFile.toURI().toString(), 500, 500, true, true);
             previewFoto.setImage(image);
             placeholderFoto.setVisible(false); // Sembunyikan tulisan "Pilih Foto"
         }
@@ -138,11 +141,25 @@ public class addResepController {
     public void handleSimpan(javafx.event.ActionEvent event) {
         String judul = inputJudul.getText();
         String kategori = comboKategori.getValue();
-        int waktu = inputWaktu.getText().isEmpty() ? 0 : Integer.parseInt(inputWaktu.getText());
-        int porsi = inputPorsi.getText().isEmpty() ? 0 : Integer.parseInt(inputPorsi.getText());
-
+        if (judul == null || judul.trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Peringatan", "Judul resep tidak boleh kosong!");
+            return;
+        }
+        if (kategori == null) {
+            showAlert(Alert.AlertType.WARNING, "Peringatan", "Silakan pilih kategori resep!");
+            return;
+        }
+        int waktu = 0;
+        int porsi = 0;
+        try {
+            waktu = inputWaktu.getText().isEmpty() ? 0 : Integer.parseInt(inputWaktu.getText());
+            porsi = inputPorsi.getText().isEmpty() ? 0 : Integer.parseInt(inputPorsi.getText());
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Kesalahan Format", "Estimasi Waktu dan Porsi harus berupa angka bulat!");
+            return;
+        }
         if(sessionManager.getUser() == null) {
-            System.out.println("Anda belum login!");
+            showAlert(Alert.AlertType.ERROR, "Akses Ditolak", "Anda harus login terlebih dahulu untuk menyimpan resep!");
             return;
         }
         int idUser = sessionManager.getUser().getId();
@@ -152,6 +169,10 @@ public class addResepController {
             HBox row = (HBox) node;
             TextField tf = (TextField) row.getChildren().get(1);
             if (!tf.getText().trim().isEmpty()) listBahan.add(tf.getText().trim());
+        }
+        if (listBahan.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Peringatan", "Minimal harus ada 1 bahan yang diisi!");
+            return;
         }
 
         StringBuilder langkahGabungan = new StringBuilder();
@@ -165,44 +186,51 @@ public class addResepController {
             }
         }
 
-        int idKategori = 2; // Makanan
+        int idKategori = 2;
         if ("Dessert".equals(kategori)) idKategori = 4;
         else if ("Minuman".equals(kategori)) idKategori = 5;
 
-        // ----------- PROSES KOPI FOTO (SIBARISTA STYLE) -----------
+        // ----------- PROSES KOPI FOTO -----------
         String namaFileFoto = null;
 
         if (fotoTerpilih != null) {
             try {
                 namaFileFoto = System.currentTimeMillis() + "_" + fotoTerpilih.getName().replaceAll("\\s+", "_");
 
-                File folderImages = new File("images");
+                File folderImages = new File("src/main/resources/images/");
                 if (!folderImages.exists()) {
                     folderImages.mkdirs();
                 }
 
                 File tujuan = new File(folderImages, namaFileFoto);
-
                 Files.copy(fotoTerpilih.toPath(), tujuan.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             } catch (Exception e) {
-                System.out.println("❌ Gagal mengopi gambar!");
+                showAlert(Alert.AlertType.ERROR, "Gagal", "Terjadi kesalahan saat mengunggah foto: " + e.getMessage());
                 e.printStackTrace();
                 namaFileFoto = null;
             }
         }
-        // ---------------------------------------------------------
 
+        // ----------- SIMPAN KE DATABASE -----------
         resepDB db = new resepDB();
-        // Perhatikan di sini kita mengirim 'namaFileFoto'
         boolean sukses = db.tambahResepLengkap(idUser, judul, idKategori, tingkatKepedasan, waktu, porsi, langkahGabungan.toString(), listBahan, namaFileFoto);
 
         if (sukses) {
-            System.out.println("✅ Resep berhasil disimpan!");
+            showAlert(Alert.AlertType.INFORMATION, "Sukses", "Resep berhasil disimpan ke sistem!");
             kembaliKeHome(event);
         } else {
-            System.out.println("❌ Gagal menyimpan resep!");
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Gagal menyimpan resep ke database. Silakan coba lagi.");
         }
+    }
+
+    // ================= FUNGSI ALERT =================
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     // ================= NAVIGASI =================
@@ -214,7 +242,7 @@ public class addResepController {
     private void kembaliKeHome(javafx.event.Event event) {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/haphaphap/home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/home.fxml"));
             stage.setScene(new Scene(loader.load()));
             stage.show();
         } catch (Exception e) {

@@ -38,14 +38,14 @@ public class imageUtil {
             String fullPath = RESOURCE_PATH + pathFoto;
             InputStream is = imageUtil.class.getResourceAsStream(fullPath);
 
+            // Set resolusi aman untuk thumbnail list (misal 400x400)
             if (is != null) {
-                img = new Image(is);
+                img = new Image(is, 400, 400, true, true);
             }
-            // 2. Kalau gagal, coba cari langsung di folder target (Untuk gambar yang BARU SAJA diupload)
             else {
-                File fileTarget = new File("copy_Teletubies_haphaphap/target/classes" + fullPath);
+                File fileTarget = new File("HapHapHap/target/classes" + fullPath);
                 if(fileTarget.exists()){
-                    img = new Image(fileTarget.toURI().toString());
+                    img = new Image(fileTarget.toURI().toString(), 400, 400, true, true);
                 }
             }
 

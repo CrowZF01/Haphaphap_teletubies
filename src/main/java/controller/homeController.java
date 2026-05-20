@@ -10,7 +10,10 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import util.sessionManager;
 
+import javafx.scene.control.Label;
+
 public class homeController {
+
     private Node exploreView;
     private exploreController exploreCtrl;
 
@@ -130,4 +133,5 @@ public class homeController {
             e.printStackTrace();
         }
     }
+
 }
