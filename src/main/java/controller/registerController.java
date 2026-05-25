@@ -1,6 +1,5 @@
 package controller;
 
-import database.userDB;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,6 +13,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import service.UserService;
 
 import java.io.IOException;
 
@@ -35,20 +35,8 @@ public class registerController {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
-            statusLabel.setText("Semua field harus diisi");
-            statusLabel.setStyle("-fx-text-fill: #E74C3C;");
-            return;
-        }
-
-        if (!password.equals(confirmPassword)){
-            statusLabel.setText("Konfirmasi kata sandi anda tidak cocok");
-            statusLabel.setStyle("-fx-text-fill: #E74C3C;");
-            return;
-        }
-
-        userDB db = new userDB();
-        if (db.registerUser(username,password)){
+        try {
+            UserService.getInstance().register(username, password, confirmPassword);
             statusLabel.setText("Akun berhasil dibuat untuk: " + username);
             statusLabel.setStyle("-fx-text-fill: #E74C3C;");
 
@@ -60,8 +48,8 @@ public class registerController {
                 }
             });
             jeda.play();
-        } else {
-            statusLabel.setText("Gagal mendaftarkan akun");
+        } catch (IllegalArgumentException e) {
+            statusLabel.setText(e.getMessage());
             statusLabel.setStyle("-fx-text-fill: #E74C3C;");
         }
     }

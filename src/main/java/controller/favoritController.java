@@ -1,6 +1,6 @@
 package controller;
 
-import database.resepDB;
+import service.RecipeService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -24,9 +24,8 @@ public class favoritController {
 
         if (!sessionManager.isLogin()) return;
 
-        resepDB db = new resepDB();
         int idUser = sessionManager.getUser().getId();
-        List<Resep> listFavorit = db.getFavoritByUser(idUser);
+        List<Resep> listFavorit = RecipeService.getInstance().getFavoritByUser(idUser);
 
         if (listFavorit.isEmpty()) {
             Label kosong = new Label("Belum ada resep yang difavoritkan.");

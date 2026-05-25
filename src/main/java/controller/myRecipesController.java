@@ -1,6 +1,6 @@
 package controller;
 
-import database.resepDB;
+import service.RecipeService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -25,9 +25,8 @@ public class myRecipesController {
 
         if (!sessionManager.isLogin()) return;
 
-        resepDB db = new resepDB();
         int idUser = sessionManager.getUser().getId();
-        List<Resep> listResep = db.getResepByPembuat(idUser);
+        List<Resep> listResep = RecipeService.getInstance().getResepByPembuat(idUser);
 
         if (listResep.isEmpty()) {
             Label kosong = new Label("Anda belum membuat resep apapun.");

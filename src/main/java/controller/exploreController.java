@@ -1,6 +1,6 @@
 package controller;
 
-import database.resepDB;
+import service.RecipeService;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +22,7 @@ public class exploreController {
     @FXML private FlowPane resepContainer;
     @FXML private TextField searchField;
 
-    private final resepDB db = new resepDB();
+    private final RecipeService db = RecipeService.getInstance();
     private final List<String> listBahanTerpilih = new ArrayList<>();
     private final List<Resep> masterData = new ArrayList<>();
 

@@ -1,6 +1,5 @@
 package controller;
 
-import database.resepDB;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import model.Bahan;
 import model.Resep;
+import service.RecipeService;
+import service.FavoriteService;
 import util.imageUtil;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public class detailController {
 
         if (util.sessionManager.isLogin()) {
             int idUser = util.sessionManager.getUser().getId();
-            isFavorit = new database.userDB().cekFavorit(idUser, resep.getIdResep());
+            isFavorit = FavoriteService.getInstance().cekFavorit(idUser, resep.getIdResep());
             renderTombolFavorit(); // Ubah tampilan tombol sesuai status
         }
 
@@ -81,8 +82,7 @@ public class detailController {
     }
 
     private void loadBahan(int idResep) {
-        resepDB db = new resepDB();
-        List<Bahan> listBahan = db.getBahanByResep(idResep);
+        List<Bahan> listBahan = RecipeService.getInstance().getBahanByResep(idResep);
         if (listBahan.isEmpty()){
             bahanResep.setText("Daftar bahan tidak tersedia");
             return;
@@ -128,15 +128,8 @@ public class detailController {
         }
 
         int idUser = util.sessionManager.getUser().getId();
-        database.userDB db = new database.userDB();
 
-        if (isFavorit) {
-            // Kalau sudah favorit, maka hapus
-            db.hapusFavorit(idUser, resepAktif.getIdResep());
-        } else {
-            // Kalau belum, maka tambah
-            db.tambahKeFavorit(idUser, resepAktif.getIdResep());
-        }
+        FavoriteService.getInstance().toggleFavorit(idUser, resepAktif.getIdResep(), isFavorit);
 
         // Balikkan status (Toggle) lalu render ulang tombolnya
         isFavorit = !isFavorit;

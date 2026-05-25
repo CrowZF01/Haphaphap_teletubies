@@ -1,6 +1,6 @@
 package controller;
 
-import database.userDB;
+import service.FavoriteService;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,8 +74,7 @@ public class itemResepController {
 
         if (sessionManager.isLogin() && ikonHati != null) {
             int idUser = sessionManager.getUser().getId();
-            userDB db = new userDB();
-            boolean isFavorit = db.cekFavorit(idUser, resep.getIdResep());
+            boolean isFavorit = FavoriteService.getInstance().cekFavorit(idUser, resep.getIdResep());
 
             if (isFavorit) {
                 ikonHati.setText("♥");

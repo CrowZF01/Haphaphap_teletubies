@@ -1,5 +1,6 @@
 package database;
 
+import dao.ResepDao;
 import model.Bahan;
 import model.Resep;
 import util.databaseUtil;
@@ -8,7 +9,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class resepDB {
+public class resepDB implements ResepDao {
+
+    private static resepDB instance;
+
+    private resepDB() {}
+
+    public static resepDB getInstance() {
+        if (instance == null) {
+            instance = new resepDB();
+        }
+        return instance;
+    }
 
     // Query sakti huruf kecil sesuai DB
     private final String BASE_QUERY =

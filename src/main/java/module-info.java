@@ -16,4 +16,5 @@ module com.felix_.app.copy_teletubies_haphaphap {
     exports model;
     exports database;
     exports util;
+    exports dao;
 }

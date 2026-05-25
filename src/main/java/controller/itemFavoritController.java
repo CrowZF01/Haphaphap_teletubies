@@ -1,6 +1,6 @@
 package controller;
 
-import database.userDB;
+import service.FavoriteService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -59,9 +59,8 @@ public class itemFavoritController {
     @FXML
     public void handleHapusFavorit() {
         if (sessionManager.isLogin()) {
-            userDB db = new userDB();
-            boolean sukses = db.hapusFavorit(sessionManager.getUser().getId(), resepAktif.getIdResep());
-            if (sukses && parentController != null) {
+            FavoriteService.getInstance().toggleFavorit(sessionManager.getUser().getId(), resepAktif.getIdResep(), true);
+            if (parentController != null) {
                 // Refresh daftar favorit di layar
                 parentController.loadDataFavorit();
             }

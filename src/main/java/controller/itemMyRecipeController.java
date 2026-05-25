@@ -1,6 +1,6 @@
 package controller;
 
-import database.resepDB;
+import service.RecipeService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -56,10 +56,8 @@ public class itemMyRecipeController {
 
     @FXML
     public void handleHapusResep() {
-        resepDB db = new resepDB();
-
-        // Memanggil method hapus permanen
-        boolean sukses = db.hapusResepPermanen(resepAktif.getIdResep());
+        // Memanggil method hapus permanen via RecipeService
+        boolean sukses = RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
 
         if (sukses && parentController != null) {
             // Refresh layar My Recipes
