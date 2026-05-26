@@ -32,6 +32,9 @@ public class itemResepController {
     @FXML
     private Label ikonHati;
 
+    @FXML
+    private javafx.scene.control.Button btnEditAdmin;
+
     private Resep resepAktif;
 
     public void setData(Resep resep) {
@@ -84,6 +87,15 @@ public class itemResepController {
                 ikonHati.setStyle("-fx-text-fill: #333333; -fx-font-size: 18px;");
             }
         }
+
+        // Tampilkan tombol edit hanya jika user aktif adalah ADMIN
+        if (sessionManager.isLogin() && "ADMIN".equalsIgnoreCase(sessionManager.getUser().getRole())) {
+            btnEditAdmin.setVisible(true);
+            btnEditAdmin.setManaged(true);
+        } else {
+            btnEditAdmin.setVisible(false);
+            btnEditAdmin.setManaged(false);
+        }
     }
 
     public void handleLihatDetail(MouseEvent event) {
@@ -103,6 +115,25 @@ public class itemResepController {
 
         } catch (Exception e) {
             System.out.println("Gagal membuka halaman detail!");
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleEditAdmin(javafx.event.ActionEvent event) {
+        // Mencegah klik menyebar ke card utama (memicu detail view)
+        event.consume();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/add.fxml"));
+            Parent root = loader.load();
+            
+            addResepController controller = loader.getController();
+            controller.setResepUntukDiedit(resepAktif);
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

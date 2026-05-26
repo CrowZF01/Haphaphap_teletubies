@@ -22,11 +22,50 @@ public class homeController {
 
     private Node myRecipesView;
     private myRecipesController myRecipesCtrl;
+    
     @FXML private StackPane contentArea;
+    @FXML private Label menuFavorit;
+    @FXML private Label menuMyRecipes;
+    @FXML private Label menuModerasi;
+    @FXML private javafx.scene.control.Button btnAddRecipe;
 
     @FXML
     public void initialize() {
-        // Saat pertama kali jalan, langsung load explore.fxml kategori Semua
+        if (sessionManager.isLogin()) {
+            model.User user = sessionManager.getUser();
+            String role = user.getRole();
+
+            if ("GUEST".equalsIgnoreCase(role)) {
+                menuFavorit.setVisible(false);
+                menuFavorit.setManaged(false);
+                menuMyRecipes.setVisible(false);
+                menuMyRecipes.setManaged(false);
+                btnAddRecipe.setVisible(false);
+                btnAddRecipe.setManaged(false);
+                menuModerasi.setVisible(false);
+                menuModerasi.setManaged(false);
+            } else if ("ADMIN".equalsIgnoreCase(role)) {
+                menuModerasi.setVisible(true);
+                menuModerasi.setManaged(true);
+                menuFavorit.setVisible(false);
+                menuFavorit.setManaged(false);
+                menuMyRecipes.setVisible(false);
+                menuMyRecipes.setManaged(false);
+            } else {
+                menuModerasi.setVisible(false);
+                menuModerasi.setManaged(false);
+            }
+        } else {
+            menuFavorit.setVisible(false);
+            menuFavorit.setManaged(false);
+            menuMyRecipes.setVisible(false);
+            menuMyRecipes.setManaged(false);
+            btnAddRecipe.setVisible(false);
+            btnAddRecipe.setManaged(false);
+            menuModerasi.setVisible(false);
+            menuModerasi.setManaged(false);
+        }
+
         bukaExplore("Semua");
     }
 
@@ -134,4 +173,15 @@ public class homeController {
         }
     }
 
+    @FXML
+    public void pindahModerasi() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/moderasiAdmin.fxml"));
+            Node view = loader.load();
+            contentArea.getChildren().setAll(view);
+        } catch (Exception e) {
+            System.out.println("Gagal memuat halaman Moderasi Admin");
+            e.printStackTrace();
+        }
+    }
 }

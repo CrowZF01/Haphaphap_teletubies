@@ -16,4 +16,7 @@ public interface ResepDao {
     List<Resep> getFavoritByUser(int idUser);
     List<Resep> getResepByPembuat(int idUser);
     boolean hapusResepPermanen(int idResep);
+    List<Resep> getPendingResep();
+    boolean updateResepStatus(int idResep, String status);
+    boolean editResepLengkap(int idResep, int idKategori, String judul, int kepedasan, int waktu, int porsi, String langkah, List<String> bahanList, String foto);
 }

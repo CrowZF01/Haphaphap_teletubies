@@ -73,4 +73,23 @@ public class loginController {
             System.out.println("ERROR LOGIN: " + pesan);
         }
     }
+
+    @FXML
+    public void handleGuestLogin() {
+        try {
+            util.sessionManager.setUser(new model.User(-1, "Guest", "", "GUEST"));
+            System.out.println("Masuk sebagai Guest");
+            
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/home.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            tampilkanError("Sistem Error: Gagal masuk sebagai Guest!");
+            e.printStackTrace();
+        }
+    }
 }

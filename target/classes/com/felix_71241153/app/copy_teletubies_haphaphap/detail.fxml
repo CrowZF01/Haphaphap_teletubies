@@ -46,7 +46,7 @@
                             <children>
                                 <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #A65021;" text="Daftar Bahan" />
 
-                                <Label fx:id="bahanResep" style="-fx-font-size: 14px; -fx-text-fill: #555555; -fx-line-spacing: 8px;" text="Memuat daftar bahan..." wrapText="true" />
+                                <VBox fx:id="bahanContainer" spacing="12.0" />
 
                                 <Region VBox.vgrow="ALWAYS" />
                                 <Button fx:id="btnFavorit" onAction="#handleToggleFavorit" maxWidth="Infinity" style="-fx-background-color: #A65021; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12; -fx-cursor: hand;" text="♡ Simpan Favorit" />                            </children>
@@ -68,7 +68,7 @@
                                     <children>
                                         <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #A65021;" text="Langkah Memasak" />
 
-                                        <Label fx:id="langkahResep" style="-fx-font-size: 14px; -fx-text-fill: #555555; -fx-line-spacing: 8px;" text="Memuat langkah pembuatan..." wrapText="true" />
+                                        <VBox fx:id="langkahContainer" spacing="16.0" />
                                     </children>
                                 </VBox>
                             </children>

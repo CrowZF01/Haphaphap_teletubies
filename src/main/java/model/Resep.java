@@ -10,8 +10,23 @@ public class Resep {
     private int estimasiWaktu;
     private int porsiSajian;
     private String foto;
+    private String status; // 'PENDING', 'PUBLISHED', 'REJECTED'
 
     public Resep() {
+    }
+
+    public Resep(int idResep, String judul, String jenisMakanan, int tingkatKepedasan,
+                 String bahan, String langkahPembuatan, int estimasiWaktu, int porsiSajian, String foto, String status) {
+        this.idResep = idResep;
+        this.judul = judul;
+        this.jenisMakanan = jenisMakanan;
+        this.tingkatKepedasan = tingkatKepedasan;
+        this.bahan = bahan;
+        this.langkahPembuatan = langkahPembuatan;
+        this.estimasiWaktu = estimasiWaktu;
+        this.porsiSajian = porsiSajian;
+        this.foto = foto;
+        this.status = status;
     }
 
     public Resep(int idResep, String judul, String jenisMakanan, int tingkatKepedasan,
@@ -25,6 +40,7 @@ public class Resep {
         this.estimasiWaktu = estimasiWaktu;
         this.porsiSajian = porsiSajian;
         this.foto = foto;
+        this.status = "PENDING";
     }
 
     public int getIdResep() {
@@ -97,6 +113,14 @@ public class Resep {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getDetailResep() {

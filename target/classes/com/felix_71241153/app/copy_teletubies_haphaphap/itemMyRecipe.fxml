@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -52,7 +53,15 @@
 
                 <Region VBox.vgrow="ALWAYS" />
 
-                <Label onMouseClicked="#handleLihatResep" style="-fx-text-fill: #A65021; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 13px;" text="Lihat Resep →" />
+                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                    <children>
+                        <Label onMouseClicked="#handleLihatResep" style="-fx-text-fill: #A65021; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 13px;" text="Lihat Resep →" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="statusLabel" style="-fx-font-size: 12px; -fx-font-style: italic; -fx-text-fill: #888888;" text="Draft" />
+                        <Button fx:id="btnPublish" onAction="#handlePublish" style="-fx-background-color: #A65021; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11px;" text="Publish" />
+                        <Button fx:id="btnEdit" onAction="#handleEdit" style="-fx-background-color: #FBE2D1; -fx-text-fill: #A65021; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11px;" text="Edit ✏️" />
+                    </children>
+                </HBox>
             </children>
         </VBox>
 

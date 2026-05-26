@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.Bahan;
 import model.Resep;
@@ -20,7 +22,7 @@ import java.util.List;
 public class detailController {
 
     @FXML
-    private Label bahanResep;
+    private VBox bahanContainer;
 
     @FXML
     private ImageView fotoResepDetail;
@@ -32,7 +34,7 @@ public class detailController {
     private Label kategoriLabel;
 
     @FXML
-    private Label langkahResep;
+    private VBox langkahContainer;
 
     @FXML
     private Label pedasLabel;
@@ -54,8 +56,48 @@ public class detailController {
         waktuLabel.setText("⏱ " + resep.getEstimasiWaktu() + "m");
         pedasLabel.setText("🌶 Level " + resep.getTingkatKepedasan());
         kategoriLabel.setText(resep.getJenisMakanan().toUpperCase());
-        langkahResep.setText(resep.getLangkahPembuatan());
         porsiLabel.setText("🍽 " + resep.getPorsiSajian() + " Porsi");
+
+        // Render langkah memasak secara dinamis
+        langkahContainer.getChildren().clear();
+        if (resep.getLangkahPembuatan() != null && !resep.getLangkahPembuatan().isEmpty()) {
+            String[] steps = resep.getLangkahPembuatan().split("\\r?\\n");
+            int stepNum = 1;
+            for (String stepText : steps) {
+                if (stepText.trim().isEmpty()) {
+                    continue;
+                }
+
+                // Bersihkan angka prefix (seperti "1. ")
+                String cleanText = stepText.trim().replaceAll("^\\d+([\\.\\)\\s]+|\\s+)", "");
+                if (cleanText.trim().isEmpty()) {
+                    continue;
+                }
+
+                HBox row = new HBox(20);
+                row.setAlignment(javafx.geometry.Pos.TOP_LEFT);
+
+                // Angka langkah besar berwarna cokelat muda
+                Label stepNumber = new Label(String.valueOf(stepNum));
+                stepNumber.setStyle("-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #EBD6C8; -fx-min-width: 35px; -fx-alignment: center-right; -fx-translate-y: -8;");
+
+                VBox textBox = new VBox(5);
+                Label descLabel = new Label(cleanText);
+                descLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444444; -fx-line-spacing: 4px;");
+                descLabel.setWrapText(true);
+                HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
+
+                textBox.getChildren().add(descLabel);
+                row.getChildren().addAll(stepNumber, textBox);
+                langkahContainer.getChildren().add(row);
+
+                stepNum++;
+            }
+        } else {
+            Label kosong = new Label("Langkah memasak tidak tersedia.");
+            kosong.setStyle("-fx-text-fill: #888888; -fx-font-size: 14px; -fx-font-style: italic;");
+            langkahContainer.getChildren().add(kosong);
+        }
 
         if (util.sessionManager.isLogin()) {
             int idUser = util.sessionManager.getUser().getId();
@@ -78,21 +120,36 @@ public class detailController {
             System.out.println("Gambar tidak ditemukan");
             fotoResepDetail.setImage(null);
             placeholderIcon.setVisible(true);
-        }        loadBahan(resep.getIdResep());
+        }
+        loadBahan(resep.getIdResep());
     }
 
     private void loadBahan(int idResep) {
+        bahanContainer.getChildren().clear();
         List<Bahan> listBahan = RecipeService.getInstance().getBahanByResep(idResep);
         if (listBahan.isEmpty()){
-            bahanResep.setText("Daftar bahan tidak tersedia");
+            Label kosong = new Label("Daftar bahan tidak tersedia");
+            kosong.setStyle("-fx-text-fill: #888888; -fx-font-size: 14px; -fx-font-style: italic;");
+            bahanContainer.getChildren().add(kosong);
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
         for (Bahan bahan : listBahan){
-            sb.append("- ").append(bahan.getNamaBahan()).append("\n");
+            HBox row = new HBox(10);
+            row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+            // Bullets warna cokelat hangat ●
+            Label dot = new Label("●");
+            dot.setStyle("-fx-text-fill: #A65021; -fx-font-size: 10px;");
+
+            Label namaBahan = new Label(bahan.getNamaBahan());
+            namaBahan.setStyle("-fx-text-fill: #444444; -fx-font-size: 14px; -fx-font-weight: bold;");
+            namaBahan.setWrapText(true);
+            HBox.setHgrow(namaBahan, javafx.scene.layout.Priority.ALWAYS);
+
+            row.getChildren().addAll(dot, namaBahan);
+            bahanContainer.getChildren().add(row);
         }
-        bahanResep.setText(sb.toString());
     }
 
     @FXML

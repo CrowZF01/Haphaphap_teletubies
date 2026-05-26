@@ -48,6 +48,8 @@
                                 <Button maxWidth="Infinity" onAction="#handleLogin" style="-fx-background-color: #A0522D; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 13px;" text="Masuk" />
 
                                 <Button maxWidth="Infinity" onAction="#pindahDaftar" style="-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-text-fill: #333333; -fx-font-weight: bold; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 13px;" text="Daftar" />
+
+                                <Button maxWidth="Infinity" onAction="#handleGuestLogin" style="-fx-background-color: transparent; -fx-text-fill: #A0522D; -fx-font-weight: bold; -fx-padding: 5; -fx-cursor: hand; -fx-font-size: 13px;" text="Masuk sebagai Tamu (Guest)" />
                             </children>
                             <VBox.margin>
                                 <Insets top="10.0" />

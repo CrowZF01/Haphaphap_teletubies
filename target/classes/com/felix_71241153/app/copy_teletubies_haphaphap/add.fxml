@@ -23,7 +23,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="15.0">
                     <children>
                         <Label onMouseClicked="#handleKembali" style="-fx-cursor: hand; -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #555555;" text="←" />
-                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #222222;" text="Racik Resep Baru" />
+                        <Label fx:id="titleLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #222222;" text="Racik Resep Baru" />
                     </children>
                 </HBox>
 
@@ -134,7 +134,7 @@
                                     <VBox.margin><Insets top="10.0" /></VBox.margin>
                                     <children>
                                         <Button onAction="#handleKembali" style="-fx-background-color: transparent; -fx-text-fill: #A65021; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px;" text="Batal" />
-                                        <Button onAction="#handleSimpan" style="-fx-background-color: #A65021; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px;" text="Simpan Resep" />
+                                        <Button fx:id="btnSimpan" onAction="#handleSimpan" style="-fx-background-color: #A65021; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px;" text="Simpan Resep" />
                                     </children>
                                 </HBox>
                             </children>

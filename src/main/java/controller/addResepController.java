@@ -31,11 +31,15 @@ public class addResepController {
     @FXML private VBox langkahContainer;
     @FXML private TextField inputPorsi;
     @FXML private Button btnLv0, btnLv1, btnLv2, btnLv3;
+    @FXML private Label titleLabel;
+    @FXML private Button btnSimpan;
 
     // Variabel untuk Foto
     @FXML private ImageView previewFoto;
     @FXML private VBox placeholderFoto;
     private File fotoTerpilih;
+
+    private model.Resep resepUntukDiedit;
 
     private int tingkatKepedasan = 0;
     private int stepCounter = 1;
@@ -134,6 +138,106 @@ public class addResepController {
         btnAktif.setStyle(aktif);
     }
 
+    public void tambahBarisBahanDanIsi(String isi) {
+        HBox row = new HBox(12);
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        Label dot = new Label("⠿");
+        dot.setStyle("-fx-text-fill: #BBBBBB; -fx-font-size: 16px;");
+
+        TextField input = new TextField();
+        input.setText(isi);
+        input.setPromptText("Contoh: 1 Siung Bawang");
+        input.setStyle("-fx-background-color: #F5F5F5; -fx-padding: 10 12; -fx-background-radius: 6; -fx-border-width: 0;");
+        HBox.setHgrow(input, Priority.ALWAYS);
+
+        Label hapus = new Label("✕");
+        hapus.setStyle("-fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #888888;");
+        hapus.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                bahanContainer.getChildren().remove(row);
+            }
+        });
+
+        row.getChildren().addAll(dot, input, hapus);
+        bahanContainer.getChildren().add(row);
+    }
+
+    public void tambahBarisLangkahDanIsi(String isi) {
+        HBox row = new HBox(15);
+        row.setAlignment(javafx.geometry.Pos.TOP_LEFT);
+
+        Label nomor = new Label(String.valueOf(stepCounter++));
+        nomor.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #F0E5DE; -fx-translate-y: -10;");
+
+        TextArea input = new TextArea();
+        input.setText(isi);
+        input.setPrefRowCount(2);
+        input.setWrapText(true);
+        input.setPromptText("Jelaskan langkahnya...");
+        input.setStyle("-fx-control-inner-background: #F5F5F5; -fx-background-color: #F5F5F5; -fx-background-radius: 6; -fx-border-width: 0;");
+        HBox.setHgrow(input, Priority.ALWAYS);
+
+        row.getChildren().addAll(nomor, input);
+        langkahContainer.getChildren().add(row);
+    }
+
+    public void setResepUntukDiedit(model.Resep resep) {
+        this.resepUntukDiedit = resep;
+        if (resep != null) {
+            titleLabel.setText("Edit Resep Anda");
+            btnSimpan.setText("Update Resep");
+
+            inputJudul.setText(resep.getJudul());
+            comboKategori.setValue(resep.getJenisMakanan());
+            inputWaktu.setText(String.valueOf(resep.getEstimasiWaktu()));
+            inputPorsi.setText(String.valueOf(resep.getPorsiSajian()));
+
+            // Set kepedasan
+            if (resep.getTingkatKepedasan() == 0) setPedas0();
+            else if (resep.getTingkatKepedasan() == 1) setPedas1();
+            else if (resep.getTingkatKepedasan() == 2) setPedas2();
+            else if (resep.getTingkatKepedasan() == 3) setPedas3();
+
+            // Set Bahan
+            bahanContainer.getChildren().clear();
+            if (resep.getBahan() != null && !resep.getBahan().isEmpty()) {
+                String[] bahans = resep.getBahan().split(", ");
+                for (String b : bahans) {
+                    tambahBarisBahanDanIsi(b);
+                }
+            } else {
+                tambahBarisBahan();
+            }
+
+            // Set Langkah
+            langkahContainer.getChildren().clear();
+            stepCounter = 1;
+            if (resep.getLangkahPembuatan() != null && !resep.getLangkahPembuatan().isEmpty()) {
+                String[] langkahs = resep.getLangkahPembuatan().split("\\r?\\n");
+                for (String l : langkahs) {
+                    if (l.trim().isEmpty()) {
+                        continue;
+                    }
+                    String lClean = l.trim().replaceAll("^\\d+([\\.\\)\\s]+|\\s+)", "");
+                    if (!lClean.trim().isEmpty()) {
+                        tambahBarisLangkahDanIsi(lClean.trim());
+                    }
+                }
+            }
+            if (langkahContainer.getChildren().isEmpty()) {
+                tambahBarisLangkah();
+            }
+
+            // Set Foto
+            if (resep.getFoto() != null) {
+                previewFoto.setImage(util.imageUtil.getImage(resep.getFoto()));
+                placeholderFoto.setVisible(false);
+            }
+        }
+    }
+
     // ================= SIMPAN DATA =================
     @FXML
     public void handleSimpan(javafx.event.ActionEvent event) {
@@ -167,9 +271,15 @@ public class addResepController {
         }
 
         try {
-            RecipeService.getInstance().simpanResep(idUser, judul, kategori, tingkatKepedasan, 
-                                                    waktuStr, porsiStr, listBahan, listLangkah, fotoTerpilih);
-            showAlert(Alert.AlertType.INFORMATION, "Sukses", "Resep berhasil disimpan ke sistem!");
+            if (resepUntukDiedit != null) {
+                RecipeService.getInstance().perbaruiResep(resepUntukDiedit.getIdResep(), judul, kategori, tingkatKepedasan, 
+                                                          waktuStr, porsiStr, listBahan, listLangkah, fotoTerpilih);
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Resep berhasil diperbarui!");
+            } else {
+                RecipeService.getInstance().simpanResep(idUser, judul, kategori, tingkatKepedasan, 
+                                                        waktuStr, porsiStr, listBahan, listLangkah, fotoTerpilih);
+                showAlert(Alert.AlertType.INFORMATION, "Sukses", "Resep berhasil disimpan ke sistem!");
+            }
             kembaliKeHome(event);
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Peringatan", e.getMessage());

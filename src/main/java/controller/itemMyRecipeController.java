@@ -16,6 +16,9 @@ import util.imageUtil;
 public class itemMyRecipeController {
     @FXML private ImageView fotoResep;
     @FXML private Label kategoriLabel, judulLabel, waktuLabel, porsiLabel, pedasLabel, deskripsiLabel;
+    @FXML private Label statusLabel;
+    @FXML private javafx.scene.control.Button btnPublish;
+    @FXML private javafx.scene.control.Button btnEdit;
 
     private Resep resepAktif;
     private myRecipesController parentController;
@@ -37,6 +40,26 @@ public class itemMyRecipeController {
         deskripsiLabel.setText(deskripsi);
 
         fotoResep.setImage(imageUtil.getImage(resep.getFoto()));
+
+        // Set status text and Publish button visibility
+        String status = resep.getStatus();
+        if ("DRAFT".equalsIgnoreCase(status)) {
+            statusLabel.setText("Draft (Private)");
+            btnPublish.setVisible(true);
+            btnPublish.setManaged(true);
+        } else if ("PENDING".equalsIgnoreCase(status)) {
+            statusLabel.setText("Menunggu Persetujuan Admin");
+            btnPublish.setVisible(false);
+            btnPublish.setManaged(false);
+        } else if ("PUBLISHED".equalsIgnoreCase(status)) {
+            statusLabel.setText("Published (Public)");
+            btnPublish.setVisible(false);
+            btnPublish.setManaged(false);
+        } else {
+            statusLabel.setText(status);
+            btnPublish.setVisible(false);
+            btnPublish.setManaged(false);
+        }
     }
 
     @FXML
@@ -62,6 +85,31 @@ public class itemMyRecipeController {
         if (sukses && parentController != null) {
             // Refresh layar My Recipes
             parentController.loadDataMyRecipes();
+        }
+    }
+
+    @FXML
+    public void handlePublish() {
+        boolean sukses = RecipeService.getInstance().updateResepStatus(resepAktif.getIdResep(), "PENDING");
+        if (sukses && parentController != null) {
+            parentController.loadDataMyRecipes();
+        }
+    }
+
+    @FXML
+    public void handleEdit(javafx.event.ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/add.fxml"));
+            Parent root = loader.load();
+            
+            addResepController controller = loader.getController();
+            controller.setResepUntukDiedit(resepAktif);
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

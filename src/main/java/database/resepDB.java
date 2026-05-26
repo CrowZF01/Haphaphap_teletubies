@@ -26,7 +26,7 @@ public class resepDB implements ResepDao {
     private final String BASE_QUERY =
             "SELECT r.id_resep, r.nama_resep, k.nama_kategori, r.tingkat_kepedasan, r.foto, " +
                     "GROUP_CONCAT(b.nama_bahan SEPARATOR ', ') AS daftar_bahan, " +
-                    "r.langkah_pembuatan, r.waktu_estimasi, r.porsi_sajian " +
+                    "r.langkah_pembuatan, r.waktu_estimasi, r.porsi_sajian, r.status " +
                     "FROM resep r " +
                     "LEFT JOIN kategori k ON r.id_kategori = k.id_kategori " +
                     "LEFT JOIN resep_bahan rb ON r.id_resep = rb.id_resep " +
@@ -34,7 +34,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> getAllResep() {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' GROUP BY r.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              Statement stmt = conn.createStatement();
@@ -69,7 +69,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> cariBerdasarkanNama(String nama) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE r.nama_resep LIKE ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' AND r.nama_resep LIKE ? GROUP BY r.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,7 +90,7 @@ public class resepDB implements ResepDao {
         List<Resep> list = new ArrayList<>();
 
         StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-        sqlBuilder.append("GROUP BY r.id_resep HAVING ");
+        sqlBuilder.append("WHERE r.status = 'PUBLISHED' GROUP BY r.id_resep HAVING ");
 
         for (int i = 0; i < bahanList.size(); i++) {
             if (i > 0) {
@@ -129,13 +129,14 @@ public class resepDB implements ResepDao {
                 rs.getString("langkah_pembuatan"),
                 rs.getInt("waktu_estimasi"),
                 rs.getInt("porsi_sajian"),
-                rs.getString("foto")
+                rs.getString("foto"),
+                rs.getString("status")
         );
     }
 
     public List<Resep> filterBerdasarkanKategori(String kategori) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE k.nama_kategori = ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' AND k.nama_kategori = ? GROUP BY r.id_resep";
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kategori);
@@ -177,7 +178,7 @@ public class resepDB implements ResepDao {
         try (Connection conn = databaseUtil.getConnection()) {
 
             // 1. Simpan data resep
-            String sqlResep = "INSERT INTO resep (id_user, id_kategori, nama_resep, langkah_pembuatan, waktu_estimasi, porsi_sajian, tingkat_kepedasan, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sqlResep = "INSERT INTO resep (id_user, id_kategori, nama_resep, langkah_pembuatan, waktu_estimasi, porsi_sajian, tingkat_kepedasan, foto, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'DRAFT')";
             PreparedStatement stmtResep = conn.prepareStatement(sqlResep);
 
             stmtResep.setInt(1, idUser);
@@ -320,5 +321,117 @@ public class resepDB implements ResepDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Mengambil resep yang berstatus PENDING (untuk Admin)
+    public List<Resep> getPendingResep() {
+        List<Resep> list = new ArrayList<>();
+        String sql = BASE_QUERY + "WHERE r.status = 'PENDING' GROUP BY r.id_resep";
+
+        try (Connection conn = util.databaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(mapToResep(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Mengupdate status resep (Approve/Reject)
+    public boolean updateResepStatus(int idResep, String status) {
+        String sql = "UPDATE resep SET status = ? WHERE id_resep = ?";
+
+        try (Connection conn = util.databaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, idResep);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Mengedit seluruh data resep beserta bahan (dengan Transaksi SQL)
+    public boolean editResepLengkap(int idResep, int idKategori, String judul, int kepedasan, int waktu, int porsi, String langkah, List<String> bahanList, String foto) {
+        try (Connection conn = databaseUtil.getConnection()) {
+            conn.setAutoCommit(false); // Transaksi aman
+            try {
+                // 1. Update data resep
+                String sqlResep;
+                if (foto != null) {
+                    sqlResep = "UPDATE resep SET id_kategori = ?, nama_resep = ?, langkah_pembuatan = ?, waktu_estimasi = ?, porsi_sajian = ?, tingkat_kepedasan = ?, foto = ? WHERE id_resep = ?";
+                } else {
+                    sqlResep = "UPDATE resep SET id_kategori = ?, nama_resep = ?, langkah_pembuatan = ?, waktu_estimasi = ?, porsi_sajian = ?, tingkat_kepedasan = ? WHERE id_resep = ?";
+                }
+
+                try (PreparedStatement stmtResep = conn.prepareStatement(sqlResep)) {
+                    stmtResep.setInt(1, idKategori);
+                    stmtResep.setString(2, judul);
+                    stmtResep.setString(3, langkah);
+                    stmtResep.setInt(4, waktu);
+                    stmtResep.setInt(5, porsi);
+                    stmtResep.setInt(6, kepedasan);
+                    if (foto != null) {
+                        stmtResep.setString(7, foto);
+                        stmtResep.setInt(8, idResep);
+                    } else {
+                        stmtResep.setInt(7, idResep);
+                    }
+                    stmtResep.executeUpdate();
+                }
+
+                // 2. Hapus bahan lama dari resep_bahan (relasinya)
+                String deleteRelasi = "DELETE FROM resep_bahan WHERE id_resep = ?";
+                try (PreparedStatement stmtDeleteRelasi = conn.prepareStatement(deleteRelasi)) {
+                    stmtDeleteRelasi.setInt(1, idResep);
+                    stmtDeleteRelasi.executeUpdate();
+                }
+
+                // 3. Masukkan bahan baru dan relasinya
+                String sqlBahan = "INSERT INTO bahan (nama_bahan) VALUES (?)";
+                String sqlAmbilIdBahan = "SELECT LAST_INSERT_ID()";
+                String sqlRelasi = "INSERT INTO resep_bahan (id_resep, id_bahan) VALUES (?, ?)";
+
+                try (PreparedStatement stmtBahan = conn.prepareStatement(sqlBahan);
+                     PreparedStatement stmtRelasi = conn.prepareStatement(sqlRelasi);
+                     Statement stmtIdBahan = conn.createStatement()) {
+
+                    for (String namaBahan : bahanList) {
+                        if (namaBahan.trim().isEmpty()) {
+                            continue;
+                        }
+
+                        stmtBahan.setString(1, namaBahan);
+                        int hasilBahan = stmtBahan.executeUpdate();
+
+                        if (hasilBahan > 0) {
+                            try (ResultSet rsBahan = stmtIdBahan.executeQuery(sqlAmbilIdBahan)) {
+                                if (rsBahan.next()) {
+                                    int idBahanBaru = rsBahan.getInt(1);
+
+                                    stmtRelasi.setInt(1, idResep);
+                                    stmtRelasi.setInt(2, idBahanBaru);
+                                    stmtRelasi.executeUpdate();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                conn.commit();
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

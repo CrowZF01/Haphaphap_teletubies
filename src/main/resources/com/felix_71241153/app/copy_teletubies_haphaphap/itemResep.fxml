@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.image.ImageView?>
@@ -32,10 +34,12 @@
                     </children>
                 </HBox>
                 <Label fx:id="bahanLabel" text="Daftar bahan-bahan..." textFill="#777777" wrapText="true" style="-fx-font-size: 11px; -fx-line-spacing: 2px;" />
-                <HBox spacing="15.0">
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
                     <children>
                         <Label fx:id="waktuLabel" text="⏱ 0m" textFill="#888888" style="-fx-font-size: 11px;" />
                         <Label fx:id="porsiLabel" text="🍽 0 Porsi" textFill="#888888" style="-fx-font-size: 11px;" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnEditAdmin" onAction="#handleEditAdmin" text="Edit ✏️" style="-fx-background-color: #FBE2D1; -fx-text-fill: #A65021; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 10px;" />
                     </children>
                     <VBox.margin>
                         <Insets top="5.0" />

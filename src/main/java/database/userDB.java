@@ -37,7 +37,8 @@ public class userDB implements UserDao {
                 return new User(
                         rs.getInt("id_user"),
                         rs.getString("username"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getString("role")
                 );
             }
 
