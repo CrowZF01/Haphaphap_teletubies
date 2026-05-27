@@ -7,6 +7,7 @@ module com.felix_.app.copy_teletubies_haphaphap {
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires java.desktop;
+    requires javafx.graphics;
 
     opens com.felix_71241153.app.copy_teletubies_haphaphap to javafx.fxml;
     exports com.felix_71241153.app.copy_teletubies_haphaphap;

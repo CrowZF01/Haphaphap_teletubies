@@ -12,7 +12,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
-<ScrollPane fitToWidth="true" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: white; -fx-background: white; -fx-border-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.addResepController">
+<ScrollPane fitToWidth="true" prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: white; -fx-background: white; -fx-border-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.addResepController">
     <content>
         <VBox spacing="30.0" style="-fx-background-color: white;">
             <padding>

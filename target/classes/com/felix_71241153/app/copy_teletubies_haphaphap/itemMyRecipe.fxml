@@ -59,7 +59,7 @@
                         <Region HBox.hgrow="ALWAYS" />
                         <Label fx:id="statusLabel" style="-fx-font-size: 12px; -fx-font-style: italic; -fx-text-fill: #888888;" text="Draft" />
                         <Button fx:id="btnPublish" onAction="#handlePublish" style="-fx-background-color: #A65021; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11px;" text="Publish" />
-                        <Button fx:id="btnEdit" onAction="#handleEdit" style="-fx-background-color: #FBE2D1; -fx-text-fill: #A65021; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11px;" text="Edit ✏️" />
+                        <Button fx:id="btnEdit" onAction="#handleEdit" style="-fx-background-color: #FBE2D1; -fx-text-fill: #A65021; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11px;" text="Edit" />
                     </children>
                 </HBox>
             </children>
