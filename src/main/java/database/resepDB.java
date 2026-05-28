@@ -27,14 +27,14 @@ public class resepDB implements ResepDao {
             SELECT resep.id_resep, resep.nama_resep, kategori.nama_kategori, resep.tingkat_kepedasan, resep.foto,
                     GROUP_CONCAT(bahan.nama_bahan SEPARATOR ', ') AS daftar_bahan,
                     resep.langkah_pembuatan, resep.waktu_estimasi, resep.porsi_sajian, resep.status 
-                    FROM resep 
+                    FROM resep
                     LEFT JOIN kategori ON resep.id_kategori = kategori.id_kategori 
                     LEFT JOIN resep_bahan ON resep.id_resep = resep_bahan.id_resep
                     LEFT JOIN bahan ON resep_bahan.id_bahan = bahan.id_bahan """;
 
     public List<Resep> getAllResep() {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              Statement stmt = conn.createStatement();
@@ -50,7 +50,7 @@ public class resepDB implements ResepDao {
     }
 
     public Resep getResepById(int idResep) {
-        String sql = BASE_QUERY + "WHERE resep.id_resep = ? GROUP BY resep.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.id_resep = ? GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -69,7 +69,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> cariBerdasarkanNama(String nama) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' AND resep.nama_resep LIKE ? GROUP BY resep.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.status = 'PUBLISHED' AND resep.nama_resep LIKE ? GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,7 +90,7 @@ public class resepDB implements ResepDao {
         List<Resep> list = new ArrayList<>();
 
         StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-        sqlBuilder.append("WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep HAVING ");
+        sqlBuilder.append(" WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep HAVING ");
 
         for (int i = 0; i < bahanList.size(); i++) {
             if (i > 0) {
@@ -136,7 +136,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> filterBerdasarkanKategori(String kategori) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' AND kategori.nama_kategori = ? GROUP BY resep.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.status = 'PUBLISHED' AND kategori.nama_kategori = ? GROUP BY resep.id_resep";
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kategori);
@@ -326,7 +326,7 @@ public class resepDB implements ResepDao {
     // Mengambil resep yang berstatus PENDING (untuk Admin)
     public List<Resep> getPendingResep() {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE resep.status = 'PENDING' GROUP BY resep.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.status = 'PENDING' GROUP BY resep.id_resep";
 
         try (Connection conn = util.databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
