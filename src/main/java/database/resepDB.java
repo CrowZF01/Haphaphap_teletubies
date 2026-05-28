@@ -23,18 +23,18 @@ public class resepDB implements ResepDao {
     }
 
     // Query sakti huruf kecil sesuai DB
-    private final String BASE_QUERY =
-            "SELECT r.id_resep, r.nama_resep, k.nama_kategori, r.tingkat_kepedasan, r.foto, " +
-                    "GROUP_CONCAT(b.nama_bahan SEPARATOR ', ') AS daftar_bahan, " +
-                    "r.langkah_pembuatan, r.waktu_estimasi, r.porsi_sajian, r.status " +
-                    "FROM resep r " +
-                    "LEFT JOIN kategori k ON r.id_kategori = k.id_kategori " +
-                    "LEFT JOIN resep_bahan rb ON r.id_resep = rb.id_resep " +
-                    "LEFT JOIN bahan b ON rb.id_bahan = b.id_bahan ";
+    private final String BASE_QUERY ="""
+            SELECT resep.id_resep, resep.nama_resep, kategori.nama_kategori, resep.tingkat_kepedasan, resep.foto,
+                    GROUP_CONCAT(bahan.nama_bahan SEPARATOR ', ') AS daftar_bahan,
+                    resep.langkah_pembuatan, resep.waktu_estimasi, resep.porsi_sajian, resep.status 
+                    FROM resep 
+                    LEFT JOIN kategori ON resep.id_kategori = kategori.id_kategori 
+                    LEFT JOIN resep_bahan ON resep.id_resep = resep_bahan.id_resep
+                    LEFT JOIN bahan ON resep_bahan.id_bahan = bahan.id_bahan """;
 
     public List<Resep> getAllResep() {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              Statement stmt = conn.createStatement();
@@ -50,7 +50,7 @@ public class resepDB implements ResepDao {
     }
 
     public Resep getResepById(int idResep) {
-        String sql = BASE_QUERY + "WHERE r.id_resep = ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE resep.id_resep = ? GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -69,7 +69,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> cariBerdasarkanNama(String nama) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' AND r.nama_resep LIKE ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' AND resep.nama_resep LIKE ? GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,7 +90,7 @@ public class resepDB implements ResepDao {
         List<Resep> list = new ArrayList<>();
 
         StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-        sqlBuilder.append("WHERE r.status = 'PUBLISHED' GROUP BY r.id_resep HAVING ");
+        sqlBuilder.append("WHERE resep.status = 'PUBLISHED' GROUP BY resep.id_resep HAVING ");
 
         for (int i = 0; i < bahanList.size(); i++) {
             if (i > 0) {
@@ -136,7 +136,7 @@ public class resepDB implements ResepDao {
 
     public List<Resep> filterBerdasarkanKategori(String kategori) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE r.status = 'PUBLISHED' AND k.nama_kategori = ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE resep.status = 'PUBLISHED' AND kategori.nama_kategori = ? GROUP BY resep.id_resep";
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kategori);
@@ -251,7 +251,7 @@ public class resepDB implements ResepDao {
     public List<Resep> getFavoritByUser(int idUser) {
         List<Resep> list = new ArrayList<>();
         // INNER JOIN dengan tabel favorit_user
-        String sql = BASE_QUERY + " INNER JOIN favorit_user fu ON r.id_resep = fu.id_resep WHERE fu.id_user = ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + " INNER JOIN favorit_user ON resep.id_resep = favorit_user.id_resep WHERE favorit_user.id_user = ? GROUP BY resep.id_resep";
 
         try (Connection conn = databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -271,7 +271,7 @@ public class resepDB implements ResepDao {
     // Mengambil resep yang dibuat oleh user (My Recipes)
     public List<Resep> getResepByPembuat(int idUser) {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + " WHERE r.id_user = ? GROUP BY r.id_resep";
+        String sql = BASE_QUERY + " WHERE resep.id_user = ? GROUP BY resep.id_resep";
 
         try (Connection conn = util.databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -326,7 +326,7 @@ public class resepDB implements ResepDao {
     // Mengambil resep yang berstatus PENDING (untuk Admin)
     public List<Resep> getPendingResep() {
         List<Resep> list = new ArrayList<>();
-        String sql = BASE_QUERY + "WHERE r.status = 'PENDING' GROUP BY r.id_resep";
+        String sql = BASE_QUERY + "WHERE resep.status = 'PENDING' GROUP BY resep.id_resep";
 
         try (Connection conn = util.databaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
