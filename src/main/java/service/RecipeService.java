@@ -61,6 +61,13 @@ public class RecipeService {
             throw new IllegalArgumentException("Silakan pilih kategori resep!");
         }
 
+        if (waktuStr == null || waktuStr.trim().isEmpty()) {
+            throw new IllegalArgumentException("Estimasi Waktu tidak boleh kosong!");
+        }
+        if (porsiStr == null || porsiStr.trim().isEmpty()) {
+            throw new IllegalArgumentException("Porsi sajian tidak boleh kosong!");
+        }
+
         int waktu = 0;
         int porsi = 0;
         try {
@@ -69,6 +76,8 @@ public class RecipeService {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Estimasi Waktu dan Porsi harus berupa angka bulat!");
         }
+
+
 
         if (listBahan == null || listBahan.isEmpty()) {
             throw new IllegalArgumentException("Minimal harus ada 1 bahan yang diisi!");
