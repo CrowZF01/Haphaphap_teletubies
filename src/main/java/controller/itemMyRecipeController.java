@@ -12,6 +12,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import model.Resep;
 import util.imageUtil;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 
 public class itemMyRecipeController {
     @FXML private ImageView fotoResep;
@@ -79,12 +82,31 @@ public class itemMyRecipeController {
 
     @FXML
     public void handleHapusResep() {
-        // Memanggil method hapus permanen via RecipeService
-        boolean sukses = RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Konfirmasi Hapus Resep");
+        alert.setHeaderText(null);
+        alert.setContentText("Apakah Anda yakin ingin menghapus resep '" + resepAktif.getJudul() + "' secara permanen?");
 
-        if (sukses && parentController != null) {
-            // Refresh layar My Recipes
-            parentController.loadDataMyRecipes();
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean sukses = RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
+            if (sukses) {
+                Alert suksesAlert = new Alert(Alert.AlertType.INFORMATION);
+                suksesAlert.setTitle("Berhasil");
+                suksesAlert.setHeaderText(null);
+                suksesAlert.setContentText("Resep Anda berhasil dihapus.");
+                suksesAlert.showAndWait();
+                
+                if (parentController != null) {
+                    parentController.loadDataMyRecipes();
+                }
+            } else {
+                Alert gagalAlert = new Alert(Alert.AlertType.ERROR);
+                gagalAlert.setTitle("Gagal");
+                gagalAlert.setHeaderText(null);
+                gagalAlert.setContentText("Gagal menghapus resep.");
+                gagalAlert.showAndWait();
+            }
         }
     }
 

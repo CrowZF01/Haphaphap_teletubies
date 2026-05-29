@@ -133,12 +133,18 @@ public class exploreController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemResep.fxml"));
                 VBox card = loader.load();
                 itemResepController controller = loader.getController();
-                controller.setData(resep);
+                controller.setData(resep, this);
                 resepContainer.getChildren().add(card);
             } catch (Exception e) {
                 System.out.println("Gagal memuat itemResep.fxml");
                 e.printStackTrace();
             }
         }
+    }
+
+    public void refreshData() {
+        masterData.clear();
+        masterData.addAll(db.getAllResep());
+        terapkanSemuaFilter();
     }
 }

@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 import model.Resep;
 import util.imageUtil;
 import util.sessionManager;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 
 public class itemResepController {
 
@@ -35,7 +38,11 @@ public class itemResepController {
     @FXML
     private javafx.scene.control.Button btnEditAdmin;
 
+    @FXML
+    private javafx.scene.control.Button btnHapusAdmin;
+
     private Resep resepAktif;
+    private exploreController parentController;
 
     public void setData(Resep resep) {
         this.resepAktif = resep;
@@ -88,13 +95,21 @@ public class itemResepController {
             }
         }
 
-        // Tampilkan tombol edit hanya jika user aktif adalah ADMIN
+        // Tampilkan tombol edit & hapus hanya jika user aktif adalah ADMIN
         if (sessionManager.isLogin() && "ADMIN".equalsIgnoreCase(sessionManager.getUser().getRole())) {
             btnEditAdmin.setVisible(true);
             btnEditAdmin.setManaged(true);
+            if (btnHapusAdmin != null) {
+                btnHapusAdmin.setVisible(true);
+                btnHapusAdmin.setManaged(true);
+            }
         } else {
             btnEditAdmin.setVisible(false);
             btnEditAdmin.setManaged(false);
+            if (btnHapusAdmin != null) {
+                btnHapusAdmin.setVisible(false);
+                btnHapusAdmin.setManaged(false);
+            }
         }
     }
 
@@ -135,6 +150,43 @@ public class itemResepController {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setData(Resep resep, exploreController parent) {
+        this.parentController = parent;
+        setData(resep);
+    }
+
+    @FXML
+    public void handleHapusAdmin(javafx.event.ActionEvent event) {
+        event.consume(); // Mencegah klik menyebar ke card utama (memicu detail view)
+        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Konfirmasi Hapus Resep");
+        alert.setHeaderText(null);
+        alert.setContentText("Apakah Anda benar-benar ingin menghapus resep '" + resepAktif.getJudul() + "' secara permanen?");
+        
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean sukses = service.RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
+            if (sukses) {
+                Alert suksesAlert = new Alert(Alert.AlertType.INFORMATION);
+                suksesAlert.setTitle("Berhasil");
+                suksesAlert.setHeaderText(null);
+                suksesAlert.setContentText("Resep masakan berhasil dihapus.");
+                suksesAlert.showAndWait();
+                
+                if (parentController != null) {
+                    parentController.refreshData();
+                }
+            } else {
+                Alert gagalAlert = new Alert(Alert.AlertType.ERROR);
+                gagalAlert.setTitle("Gagal");
+                gagalAlert.setHeaderText(null);
+                gagalAlert.setContentText("Gagal menghapus resep masakan.");
+                gagalAlert.showAndWait();
+            }
         }
     }
 }
