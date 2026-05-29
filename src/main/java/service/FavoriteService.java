@@ -45,7 +45,7 @@ public class FavoriteService {
 
             for (int i = 0; i < listFavorit.size(); i++) {
                 Resep resep = listFavorit.get(i);
-                writer.println((i + 1) + ". " + resep.getJudul()); // Sesuaikan dengan getter di model Resep
+                writer.println((i + 1) + ". " + resep.getJudul());
                 writer.println("Kategori  : " + resep.getJenisMakanan());
                 writer.println("Bahan     : " + resep.getBahan());
                 writer.println("Cara Buat : \n" + resep.getLangkahPembuatan());
