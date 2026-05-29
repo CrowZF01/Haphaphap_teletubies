@@ -16,6 +16,10 @@ import model.Resep;
 import service.RecipeService;
 import service.FavoriteService;
 import util.imageUtil;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.util.Collections;
+import javafx.scene.control.Alert;
 
 import java.util.List;
 
@@ -191,5 +195,29 @@ public class detailController {
         // Balikkan status (Toggle) lalu render ulang tombolnya
         isFavorit = !isFavorit;
         renderTombolFavorit();
+    }
+
+    @FXML
+    public void handleEksporResep() {
+        if (this.resepAktif == null) {
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Ekspor Resep ke TXT");
+
+        String fileName = resepAktif.getJudul().replaceAll(" ", "_") + ".txt";
+        fileChooser.setInitialFileName(fileName);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showSaveDialog(btnFavorit.getScene().getWindow());
+
+        if (file != null) {
+            FavoriteService.getInstance().eksporKeTxt(Collections.singletonList(resepAktif), file);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Ekspor Berhasil");
+            alert.setHeaderText(null);
+            alert.setContentText("Resep masakan berhasil diekspor");
+            alert.showAndWait();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.scene.control.Alert;
 import service.FavoriteService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,9 @@ import javafx.stage.Stage;
 import model.Resep;
 import util.imageUtil;
 import util.sessionManager;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.util.Collections;
 
 public class itemFavoritController {
     @FXML private ImageView fotoResep;
@@ -64,6 +68,29 @@ public class itemFavoritController {
                 // Refresh daftar favorit di layar
                 parentController.loadDataFavorit();
             }
+        }
+    }
+
+    @FXML
+    public void handleEksporResep() {
+        if (resepAktif == null) {
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Simpan Resep " + resepAktif.getJudul());
+        String defaultFileName = resepAktif.getJudul().replaceAll(" ", "_") + ".txt";
+        fileChooser.setInitialFileName(defaultFileName);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showSaveDialog(judulLabel.getScene().getWindow());
+
+        if (file != null) {
+            FavoriteService.getInstance().eksporKeTxt(Collections.singletonList(resepAktif), file);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Ekspor Berhasil");
+            alert.setHeaderText(null);
+            alert.setContentText("Resep masakan berhasil diekspor");
+            alert.showAndWait();
         }
     }
 }
