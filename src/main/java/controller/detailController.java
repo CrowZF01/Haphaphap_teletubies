@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import model.Bahan;
 import model.Resep;
 import service.RecipeService;
-import service.FavoriteService;
 import util.imageUtil;
 import javafx.stage.FileChooser;
 import java.io.File;
@@ -105,7 +104,7 @@ public class detailController {
 
         if (util.sessionManager.isLogin()) {
             int idUser = util.sessionManager.getUser().getId();
-            isFavorit = FavoriteService.getInstance().cekFavorit(idUser, resep.getIdResep());
+            isFavorit = RecipeService.getInstance().cekFavorit(idUser, resep.getIdResep());
             renderTombolFavorit(); // Ubah tampilan tombol sesuai status
         }
 
@@ -190,7 +189,7 @@ public class detailController {
 
         int idUser = util.sessionManager.getUser().getId();
 
-        FavoriteService.getInstance().toggleFavorit(idUser, resepAktif.getIdResep(), isFavorit);
+        RecipeService.getInstance().toggleFavorit(idUser, resepAktif.getIdResep(), isFavorit);
 
         // Balikkan status (Toggle) lalu render ulang tombolnya
         isFavorit = !isFavorit;
@@ -212,7 +211,7 @@ public class detailController {
         File file = fileChooser.showSaveDialog(btnFavorit.getScene().getWindow());
 
         if (file != null) {
-            FavoriteService.getInstance().eksporKeTxt(Collections.singletonList(resepAktif), file);
+            RecipeService.getInstance().eksporKeTxt(Collections.singletonList(resepAktif), file);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Ekspor Berhasil");
             alert.setHeaderText(null);

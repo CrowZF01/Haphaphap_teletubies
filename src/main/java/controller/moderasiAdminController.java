@@ -33,12 +33,12 @@ public class moderasiAdminController {
 
         for (Resep resep : listResep) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemModerasi.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemRow.fxml"));
                 HBox card = loader.load();
-                itemModerasiController controller = loader.getController();
+                itemRowController controller = loader.getController();
 
-                // Kirim data resep dan parent controller agar bisa refresh saat disetujui/ditolak
-                controller.setData(resep, this);
+                // Kirim data resep, mode "MODERASI", dan parent controller agar bisa refresh saat disetujui/ditolak
+                controller.setData(resep, "MODERASI", this);
 
                 pendingRecipesContainer.getChildren().add(card);
             } catch (Exception e) {

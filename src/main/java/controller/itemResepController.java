@@ -1,6 +1,6 @@
 package controller;
 
-import service.FavoriteService;
+import service.RecipeService;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -84,7 +84,7 @@ public class itemResepController {
 
         if (sessionManager.isLogin() && ikonHati != null) {
             int idUser = sessionManager.getUser().getId();
-            boolean isFavorit = FavoriteService.getInstance().cekFavorit(idUser, resep.getIdResep());
+            boolean isFavorit = RecipeService.getInstance().cekFavorit(idUser, resep.getIdResep());
 
             if (isFavorit) {
                 ikonHati.setText("♥");
@@ -169,7 +169,7 @@ public class itemResepController {
         
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            boolean sukses = service.RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
+            boolean sukses = RecipeService.getInstance().hapusResepPermanen(resepAktif.getIdResep());
             if (sukses) {
                 Alert suksesAlert = new Alert(Alert.AlertType.INFORMATION);
                 suksesAlert.setTitle("Berhasil");

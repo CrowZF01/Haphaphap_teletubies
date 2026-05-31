@@ -37,12 +37,12 @@ public class myRecipesController {
 
         for (Resep resep : listResep) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemMyRecipe.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemRow.fxml"));
                 HBox card = loader.load();
-                itemMyRecipeController controller = loader.getController();
+                itemRowController controller = loader.getController();
 
-                // Kirim data resep dan "this" (controller ini) agar bisa refresh saat diremove
-                controller.setData(resep, this);
+                // Kirim data resep, mode "MY_RECIPES", dan "this" (controller ini) agar bisa refresh saat diremove
+                controller.setData(resep, "MY_RECIPES", this);
 
                 myRecipesContainer.getChildren().add(card);
             } catch (Exception e) {

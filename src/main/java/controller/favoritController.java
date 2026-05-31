@@ -36,12 +36,12 @@ public class favoritController {
 
         for (Resep resep : listFavorit) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemFavorit.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/felix_71241153/app/copy_Teletubies_haphaphap/itemRow.fxml"));
                 HBox card = loader.load();
-                itemFavoritController controller = loader.getController();
+                itemRowController controller = loader.getController();
 
-                // Kirim data resep dan controller ini
-                controller.setData(resep, this);
+                // Kirim data resep, mode "FAVORIT", dan controller ini
+                controller.setData(resep, "FAVORIT", this);
                 favoritContainer.getChildren().add(card);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -202,4 +202,38 @@ public class RecipeService {
             throw new RuntimeException("Gagal mengupdate resep di database. Silakan coba lagi.");
         }
     }
+
+    public boolean cekFavorit(int idUser, int idResep) {
+        return resepDao.cekFavorit(idUser, idResep);
+    }
+
+    public void toggleFavorit(int idUser, int idResep, boolean isFavoritNow) {
+        if (isFavoritNow) {
+            resepDao.hapusFavorit(idUser, idResep);
+        } else {
+            resepDao.tambahKeFavorit(idUser, idResep);
+        }
+    }
+
+    public void eksporKeTxt(List<Resep> listFavorit, File file) {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(file))) {
+            writer.println("=====================================");
+            writer.println("        DAFTAR RESEP FAVORIT         ");
+            writer.println("=====================================");
+            writer.println();
+
+            for (int i = 0; i < listFavorit.size(); i++) {
+                Resep resep = listFavorit.get(i);
+                writer.println((i + 1) + ". " + resep.getJudul());
+                writer.println("Kategori  : " + resep.getJenisMakanan());
+                writer.println("Bahan     : " + resep.getBahan());
+                writer.println("Cara Buat : \n" + resep.getLangkahPembuatan());
+                writer.println("\n\n");
+            }
+            System.out.println("Ekspor berhasil ke: " + file.getAbsolutePath());
+        } catch (java.io.IOException e) {
+            System.out.println("Terjadi kesalahan saat mengekspor file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
