@@ -47,8 +47,8 @@ public class homeController {
             } else if ("ADMIN".equalsIgnoreCase(role)) {
                 menuModerasi.setVisible(true);
                 menuModerasi.setManaged(true);
-                menuFavorit.setVisible(false);
-                menuFavorit.setManaged(false);
+                menuFavorit.setVisible(true);
+                menuFavorit.setManaged(true);
                 menuMyRecipes.setVisible(false);
                 menuMyRecipes.setManaged(false);
             } else {
